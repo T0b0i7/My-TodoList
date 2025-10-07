@@ -5,6 +5,7 @@
     const addTrack = document.getElementById('add-track');
     const trackUrl = document.getElementById('track-url');
     const trackFile = document.getElementById('track-file');
+    const shufflePlayBtn = document.getElementById('shuffle-play');
     const bgEnable = document.getElementById('bg-enable');
     const bgToggle = document.getElementById('bg-toggle');
     const savePlaylist = document.getElementById('save-playlist');
@@ -75,21 +76,59 @@
     // local file support (session only via objectURL)
     if(trackFile){
         trackFile.addEventListener('change', (e) => {
-            const f = e.target.files && e.target.files[0];
-            if(!f) return;
-            const url = URL.createObjectURL(f);
-            playlist.push({ url, label: f.name });
+            const files = e.target.files;
+            if(!files || files.length === 0) return;
+            // allow multiple selection: add all files to playlist
+            for(let i=0;i<files.length;i++){
+                const f = files[i];
+                const url = URL.createObjectURL(f);
+                playlist.push({ url, label: f.name, isObjectUrl: true });
+            }
             renderPlaylist();
-            // We do not persist objectURLs in localStorage (not meaningful across reloads)
-            // If user wants background music and the bg checkbox is enabled, use this file as background loop
+            // If background enabled and no audio yet, set first selected as bg
             try {
-                if(bgEnable && bgEnable.checked) {
-                    audio.src = url;
+                if(bgEnable && bgEnable.checked && playlist.length>0) {
+                    audio.src = playlist[0].url;
                     audio.loop = true;
                     audio.play().catch(()=>{});
-                    sessionStorage.setItem('bgObjectUrl', url);
+                    // store the last object URL in session for session-only restore
+                    sessionStorage.setItem('bgObjectUrl', playlist[0].url);
                 }
-            } catch(e) { /* ignore play errors (autoplay restrictions) */ }
+            } catch(e) { /* ignore play errors */ }
+        });
+    }
+
+    // Shuffle play: play playlist items in random order
+    function shuffleArray(arr){
+        const a = arr.slice();
+        for(let i=a.length-1;i>0;i--){
+            const j = Math.floor(Math.random()*(i+1));
+            [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+    }
+
+    if(shufflePlayBtn){
+        shufflePlayBtn.addEventListener('click', () => {
+            if(playlist.length===0) return alert('Aucune musique dans la playlist.');
+            const shuffled = shuffleArray(playlist);
+            let idx = 0;
+            audio.src = shuffled[idx].url;
+            audio.play().catch(()=>{});
+            // when track ends, play next in shuffled order
+            const onEnded = () => {
+                idx++;
+                if(idx>=shuffled.length){
+                    audio.removeEventListener('ended', onEnded);
+                    return; // stop after one pass
+                }
+                audio.src = shuffled[idx].url;
+                audio.play().catch(()=>{});
+            };
+            // ensure we remove previous handlers to avoid duplicates
+            audio.removeEventListener('ended', audio._shuffleHandler || (()=>{}));
+            audio._shuffleHandler = onEnded;
+            audio.addEventListener('ended', onEnded);
         });
     }
 

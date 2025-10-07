@@ -8,6 +8,17 @@ Contenu du dépôt
 - `JS/` — scripts : `main.js` (logique ToDo + thèmes), `time.js`, `festive.js` (neige), `music.js` (lecteur)
 - `assets/` — images et éventuellement fichiers audio
 
+Exemples d'aperçus visuels :
+
+![Aperçu 1](assets/demo1.png)  
+Légende : Écran principal avec thème clair et lecteur audio.
+
+![Aperçu 2](assets/demo2.png)  
+Légende : Liste de tâches et pastilles de thème.
+
+![Aperçu 3](assets/demo3.png)  
+Légende : Panneau musique ouvert et contrôles.
+
 Fonctionnalités
 - Ajout / suppression de tâches, persistance simple via localStorage.
 - Thèmes : standard, clair, sombre, néon, pastel (sélecteurs desktop + menu mobile).
@@ -27,8 +38,9 @@ Instructions rapides
 2. Ajouter une tâche via le champ et le bouton "Je gère !".
 3. Changer le thème via les pastilles (desktop) ou le menu hamburger (mobile).
 4. Cliquer sur ❄ pour activer/désactiver la neige.
-5. Ouvrir ♪ pour le lecteur : coller une URL .mp3 ou téléverser un fichier local, cliquer ▶ pour jouer.
-6. Utiliser "Enregistrer playlist" pour sauvegarder les URLs (localStorage). Les fichiers locaux ne sont pas persistés (objectURL session-only).
+5. Ouvrir ♪ pour le lecteur : téléverser un ou plusieurs fichiers locaux (mp3) via "Choisir un fichier" puis cliquer ▶ pour jouer un morceau individuel.
+6. Nouvelle option : "Lecture aléatoire" — sélectionnez plusieurs fichiers et cliquez sur "Lecture aléatoire" pour lire la playlist dans un ordre aléatoire (une seule passe). Utilisez "Enregistrer playlist" pour sauvegarder les URLs persistantes (les fichiers locaux (objectURL) ne sont pas persistés entre sessions).
+7. Utiliser "Enregistrer playlist" pour sauvegarder les URLs (localStorage). Les fichiers locaux ne sont pas persistés (objectURL session-only).
 
 Notes techniques
 - `JS/festive.js` : dessine les flocons via canvas et réduit la densité sur petits écrans pour économiser la CPU.
